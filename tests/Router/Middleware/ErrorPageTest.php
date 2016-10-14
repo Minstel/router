@@ -23,21 +23,21 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that 'next' callback is invoked when route is found, and not called in case of error
+     * Test error and not-error cases with calling 'next' callback
      *
      * @dataProvider invokeProvider
      * @param int $statusCode
      */
-    public function testInvoke($statusCode)
+    public function testInvokeNext($statusCode)
     {
         $isError = $statusCode >= 400;
         $router = $this->getRouter();
         $middleware = new ErrorPage($router);
         list($request, $response) = $this->getRequests($statusCode);
 
-        if ($isError) {
-            $this->expectSetErrorRequest($router, $request, $response, $statusCode);
-        }
+        $isError ?
+            $this->expectSetError($router, $request, $response, $statusCode) :
+            $this->notExpectSetError($router, $request, $response, $statusCode);
 
         $result = $middleware($request, $response, function($request, $response) {
             $response->nextCalled = true;
@@ -46,11 +46,29 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
         });
 
         $this->assertEquals(get_class($response), get_class($result));
+        $this->assertTrue($result->nextCalled);        
+    }
+
+    /**
+     * Test error and not-error cases without calling 'next' callback
+     *
+     * @dataProvider invokeProvider
+     * @param int $statusCode
+     */
+    public function testInvokeNoNext($statusCode)
+    {
+        $isError = $statusCode >= 400;
+        $router = $this->getRouter();
+        $middleware = new ErrorPage($router);
+        list($request, $response) = $this->getRequests($statusCode);
 
         $isError ?
-            $this->assertTrue(!isset($result->nextCalled)) :
-            $this->assertTrue($result->nextCalled);
-        
+            $this->expectSetError($router, $request, $response, $statusCode) :
+            $this->notExpectSetError($router, $request, $response, $statusCode);
+
+        $result = $middleware($request, $response);
+
+        $this->assertEquals($response, $result);     
     }
 
     /**
@@ -104,7 +122,7 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
      * @param ResponseInterface $response 
      * @param int $statusCode 
      */
-    public function expectSetErrorRequest($router, $request, $response, $statusCode)
+    public function expectSetError($router, $request, $response, $statusCode)
     {
         $uri = $this->createMock(UriInterface::class);
 
@@ -112,5 +130,23 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
         $request->expects($this->once())->method('getUri')->will($this->returnValue($uri));
         $request->expects($this->once())->method('withUri')->with($this->equalTo($uri), $this->equalTo(true))->will($this->returnSelf());
         $router->expects($this->once())->method('run')->with($this->equalTo($request), $this->equalTo($response))->will($this->returnValue($response));
+    }
+
+    /**
+     * Not expect for error
+     *
+     * @param Router $router
+     * @param ServerRequestInterface $request 
+     * @param ResponseInterface $response 
+     * @param int $statusCode 
+     */
+    public function notExpectSetError($router, $request, $response, $statusCode)
+    {
+        $uri = $this->createMock(UriInterface::class);
+
+        $uri->expects($this->never())->method('withPath');
+        $request->expects($this->never())->method('getUri');
+        $request->expects($this->never())->method('withUri');
+        $router->expects($this->never())->method('run');
     }
 }

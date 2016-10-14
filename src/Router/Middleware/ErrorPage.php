@@ -51,11 +51,10 @@ class ErrorPage
             throw new \InvalidArgumentException("'next' should be a callback");            
         }
 
+        $response = $next ? call_user_func($next, $request, $response) : $response;    
         $status = $response->getStatusCode();
 
-        if (!$this->isErrorStatus($status)) {
-            return $next ? $next($request, $response) : $response;    
-        }
+        if (!$this->isErrorStatus($status)) return $response;
 
         $uri = $request->getUri()->withPath("/$status");
         $request = $request->withUri($uri, true);

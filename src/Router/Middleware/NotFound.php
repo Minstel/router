@@ -76,7 +76,7 @@ class NotFound
         }
 
         if ($this->getRoutes()->hasRoute($request)) {
-            return $next ? $next($request, $response) : $response;    
+            return $next ? call_user_func($next, $request, $response) : $response;    
         }
 
         $status = $this->methodNotAllowed && $this->getRoutes()->hasRoute($request, false) ? 
