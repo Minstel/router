@@ -60,7 +60,7 @@ class ErrorPage
         $uri = $request->getUri()->withPath("/$status");
         $request = $request->withUri($uri, true);
 
-        return $this->getRouter()->handle($request, $response);
+        return $this->getRouter()->run($request, $response);
     }
 
     /**

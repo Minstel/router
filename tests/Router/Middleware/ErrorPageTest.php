@@ -111,6 +111,6 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
         $uri->expects($this->once())->method('withPath')->with($this->equalTo("/$statusCode"))->will($this->returnSelf());
         $request->expects($this->once())->method('getUri')->will($this->returnValue($uri));
         $request->expects($this->once())->method('withUri')->with($this->equalTo($uri), $this->equalTo(true))->will($this->returnSelf());
-        $router->expects($this->once())->method('handle')->with($this->equalTo($request), $this->equalTo($response))->will($this->returnValue($response));
+        $router->expects($this->once())->method('run')->with($this->equalTo($request), $this->equalTo($response))->will($this->returnValue($response));
     }
 }
