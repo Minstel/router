@@ -118,7 +118,7 @@ class Router
      * @param callback      $next
      * @return ResponseInterface
      */
-    protected function handle(ServerRequestInterface $request, ResponseInterface $response, $next = null)
+    public function handle(ServerRequestInterface $request, ResponseInterface $response, $next = null)
     {
         $glob = new Glob($this->routes);
         $route = $glob->getRoute($request);
