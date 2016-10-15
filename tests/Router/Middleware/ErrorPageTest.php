@@ -45,8 +45,8 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
             return $response;
         });
 
-        $this->assertEquals(get_class($response), get_class($result));
-        $this->assertTrue($result->nextCalled);        
+        $this->assertEquals(get_class($response), get_class($result), "Middleware should return response object");
+        $this->assertTrue($result->nextCalled, "'next' was not called");        
     }
 
     /**
@@ -68,7 +68,7 @@ class ErrorPageTest extends PHPUnit_Framework_TestCase
 
         $result = $middleware($request, $response);
 
-        $this->assertEquals($response, $result);     
+        $this->assertEquals($response, $result, "Middleware should return response object");     
     }
 
     /**

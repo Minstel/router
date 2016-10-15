@@ -34,7 +34,7 @@ class ErrorHandlerTest extends PHPUnit_Framework_TestCase
             throw new Exception('Test exception'); 
         });
 
-        $this->assertEquals(get_class($response), get_class($result));        
+        $this->assertEquals(get_class($response), get_class($result), "Middleware should return response object");        
     }
 
     /**
@@ -51,8 +51,8 @@ class ErrorHandlerTest extends PHPUnit_Framework_TestCase
             return $response;
         });        
 
-        $this->assertEquals(get_class($response), get_class($result));        
-        $this->assertTrue($result->nextCalled);   
+        $this->assertEquals(get_class($response), get_class($result), "Middleware should return response object");        
+        $this->assertTrue($result->nextCalled, "'next' was not called");   
     }
 
     /**

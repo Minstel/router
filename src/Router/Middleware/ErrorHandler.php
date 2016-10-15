@@ -2,7 +2,6 @@
 
 namespace Jasny\Router\Middleware;
 
-use Jasny\Router;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
